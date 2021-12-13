@@ -16,19 +16,19 @@
 
 # Создание проекта
 
-Создаем новый проект в Android Studio. В качестве шаблона выбираем Empty Activity.
+Создаем новый проект в `Android Studio`. В качестве шаблона выбираем `Empty Activity`.
 
 ![Untitled](assets/Template.png)
 
-Указываем путь и имя. Minimum SDK оставляем без изменений. Язык: java. Завершаем создание проекта.
+Указываем путь и имя. `Minimum SDK` оставляем без изменений. Язык: `java`. Завершаем создание проекта.
 
 ![Untitled](assets/New_project.png)
 
 # Структура проекта
 
-Проект создан. У нас сразу открываются файлы MainActivity.java и activity_main.xml. Оба файла относятся к главной и пока единственной странице нашего приложения (Activity). 
-MainActivity.java –программная часть. В этом файле мы будем писать код на языке java. 
-activity_main.xml – визуальная часть. В этом файле мы будем работать с xml разметкой (добавлять элементы, с которыми пользователь будет взаимодействовать).
+Проект создан. У нас сразу открываются файлы `MainActivity.java` и `activity_main.xml`. Оба файла относятся к главной и пока единственной странице нашего приложения `(Activity)`. 
+`MainActivity.java` –программная часть. В этом файле мы будем писать код на языке `java`. 
+`activity_main.xml` – визуальная часть. В этом файле мы будем работать с `xml` разметкой (добавлять элементы, с которыми пользователь будет взаимодействовать).
 
 ![Untitled](assets/MainActivity.png)
 
@@ -36,24 +36,24 @@ activity_main.xml – визуальная часть. В этом файле м
 
 ![Untitled](assets/Project_Structure.png)
 
-AndroidManifest.xml. AndroidManifest.xml - это необходимый файл в любом проекте. Он определяет глобальные значения для вашего пакета, в нем вы описываете, что находится внутри вашего приложения - деятельности, сервисы и т.д.
-Res- папка, где хранятся все ресурсы приложения.
-Layout-файлы разметки Активити.
+`AndroidManifest.xml`. `AndroidManifest.xml` - это необходимый файл в любом проекте. Он определяет глобальные значения для вашего пакета, в нем вы описываете, что находится внутри вашего приложения - деятельности, сервисы и т.д.
+`Res-папка`, где хранятся все ресурсы приложения.
+`Layout-файлы` разметки `Активити`.
 
 # Создание разметки главной Activity
 
-Перейдем к файлу activity_main.xml, добавим элемент ScrollView c параметрами высоты и ширины : «match_parent». В таком случае элемент займет всю площадь экрана.
-Внутри ScrollView присутствует LinearLayout. Зададим ему id: linear_main
+Перейдем к файлу `activity_main.xml`, добавим элемент `ScrollView` c параметрами высоты и ширины : `match_parent`. В таком случае элемент займет всю площадь экрана.
+Внутри ScrollView присутствует `LinearLayout`. Зададим ему `id: linear_main`
 
 ![Untitled](assets/Linear_Layout.png)
 
 # Создание шаблона элементов
 
-Создаем новый layout-файл, кликнув по папке с соответствующим названием правой кнопкой мыши New>Layout Resource File и называем его item_view. 
-Добавляем на экран LinearLayout c параметрами ширины и высоты: match_parent. Внутрь кладем элементы ImageView и три TextView.
+Создаем новый `layout-файл`, кликнув по папке с соответствующим названием правой кнопкой мыши `New->Layout Resource File` и называем его `item_view`. 
+Добавляем на экран `LinearLayout` c параметрами ширины и высоты: `match_parent`. Внутрь кладем элементы `ImageView` и три `TextView`.
 Код разметки:
 
-```
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -111,23 +111,24 @@ Layout-файлы разметки Активити.
 
 # Реализация запросов к API
 
-Для выполнения запросов к Api будем использовать REST клиент для Java и Android Retrofit 2. 
-Настройка Retrofit
-Добавьте следующую зависимость в файл build.gradle (app):
-implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-Мы будем использовать Gson для преобразования JSON в POJO. Retrofit предоставляет зависимость, которая автоматически конвертирует JSON в POJO. Для этого добавьте ещё одну зависимость в файл build.gradle:
-implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
-Добавьте разрешение на работу с сетью в файл AndroidManifest:
-<uses-permission android:name="android.permission.INTERNET"/>
-После того, как зависимости добавлены, нам необходимо написать код для настройки библиотеки Retrofit.
-Создайте класс с именем NetworkService:
+Для выполнения запросов к `API` будем использовать `REST` клиент для `Java` и `Android Retrofit 2`. 
+
+Настройка `Retrofit`
+Добавьте следующую зависимость в файл `build.gradle (app)`:
+`implementation 'com.squareup.retrofit2:retrofit:2.4.0'`
+Мы будем использовать Gson для преобразования `JSON` в `POJO. Retrofit` предоставляет зависимость, которая автоматически конвертирует `JSON` в `POJO`. Для этого добавьте ещё одну зависимость в файл `build.gradle`:
+`implementation 'com.squareup.retrofit2:converter-gson:2.3.0'`
+Добавьте разрешение на работу с сетью в файл `AndroidManifest`:
+`<uses-permission android:name="android.permission.INTERNET"/>`
+После того, как зависимости добавлены, нам необходимо написать код для настройки библиотеки `Retrofit`.
+Создайте класс с именем `NetworkService`:
 
 ![Untitled](assets/Network_service.png)
 
-Этот класс должен быть singleton-объектом, поэтому объявляем статическую переменную и функцию, которая создаёт и возвращает переменную того же типа, что и класс. Объявим и инициализируем Retrofit в конструкторе NetworkService:
+Этот класс должен быть `singleton-объектом`, поэтому объявляем статическую переменную и функцию, которая создаёт и возвращает переменную того же типа, что и класс. Объявим и инициализируем `Retrofit` в конструкторе `NetworkService`:
 Получаем следующее:
 
-```
+```java
 public class NetworkService {
     private static NetworkService mInstance;
     private static final String BASE_URL = "http://192.168.100.108:8000";
@@ -152,14 +153,14 @@ public class NetworkService {
 
 # Создание POJO класса
 
-POJO класс – класс объекты которого будут создаваться из полученного json. Основу составляют переменные, геттеры и сеттеры. 
-Наше api имеет следующий вид:
+`POJO` класс – класс объекты которого будут создаваться из полученного `json`. Основу составляют переменные, геттеры и сеттеры. 
+Наше `API` имеет следующий вид:
 
 ![Untitled](assets/API_format.png)
 
-Для него Pojo класс будет следующим:
+Для него `Pojo` класс будет следующим:
 
-```
+```java
 public class Post {
     @SerializedName("pk")
     @Expose
@@ -200,18 +201,18 @@ public class Post {
 }
 ```
 
-Подобно классу создаем интерфейс JSONPlaceHolderApi. Он будет определять конечную точку запроса к Api. 
+Подобно классу создаем интерфейс `JSONPlaceHolderApi`. Он будет определять конечную точку запроса к `API`. 
 
-```
+```java
 public interface JSONPlaceHolderApi {
     @GET("/os")
     public Call<List<Post>> getAllPosts();
 }
 ```
 
-Теперь нам нужно, чтобы Retrofit предоставил реализацию интерфейса JSONPlaceHolderApi. Для этого используем метод create():
+Теперь нам нужно, чтобы `Retrofit` предоставил реализацию интерфейса `JSONPlaceHolderApi`. Для этого используем метод `create()`:
 
-```
+```java
 public class NetworkService {
     private static NetworkService mInstance;
     private static final String BASE_URL = "http://192.168.100.108:8000";
@@ -236,9 +237,9 @@ public class NetworkService {
 }
 ```
 
-Добавим в MainActivity.java отправление запроса:
+Добавим в `MainActivity.java` отправление запроса:
 
-```
+```java
 NetworkService.getInstance()
         .getJSONApi()
         .getAllPosts()
@@ -263,16 +264,16 @@ NetworkService.getInstance()
 
 # Демонстрация полученных данных пользователю
 
-Добавим в build.gradle (app) зависимости:
+Добавим в `build.gradle (app)` зависимости:
 
-```
+```java
 implementation 'com.github.bumptech.glide:glide:4.11.0'
 annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 ```
 
-Создадим функцию addCardView(Post post, int i) в классе MainActivity
+Создадим функцию `addCardView(Post post, int i)` в классе `MainActivity`
 
-```
+```java
 public void addCardView(Post post, int i) {
 
 //Преобразование лаяута шаблона в элемент типа View
@@ -323,30 +324,31 @@ public void addCardView(Post post, int i) {
 }
 ```
 
-Также необходимо создать вне метода onCreate переменные
+Также необходимо создать вне метода `onCreate` переменные
 
-```
+```java
 LinearLayout linMain;
 ArrayList<Bundle> bundles;
 ```
 
 и проинициализировать их внутри этого метода. 
 
-```
+```java
 bundles = new ArrayList<>();
 linMain = findViewById(R.id.linear_main);
 ```
 
-Добавляем вызовы созданной ранее функции внутрь метода onResponse(…)
+Добавляем вызовы созданной ранее функции внутрь метода `onResponse(…)`
 
-```
+```java
 for (int i = 0; i < postList.size(); i++) {
     addCardView(postList.get(i), i);
 }
 ```
 
-Таким образом, код класса MainActivity
-```
+Таким образом, код класса `MainActivity`
+
+```java
 public class MainActivity extends AppCompatActivity {
     LinearLayout linMain;
     ArrayList<Bundle> bundles;
@@ -424,23 +426,23 @@ public class MainActivity extends AppCompatActivity {
 
 # Запуск локального сервера
     
-Добавляем в settings django проекта с api.
+Добавляем в `settings` `django` проекта с `API`.
 
-ALLOWED_HOSTS = ["192.168.100.108", "localhost", "127.0.0.1"] где 
-"192.168.100.108"- IPV4 нашего компьютера.
+`ALLOWED_HOSTS = ["192.168.100.108", "localhost", "127.0.0.1"]` где 
+`192.168.100.108` - `IPV4` нашего компьютера.
 
 Запускаем из командной строки и папки проекта сервер
 
 ![Untitled](assets/Django_start.png)
     
-Меняем в классе InternetService переменную BASE_URL, подставляя свой ipv4. Порт оставляем тот же. 
+Меняем в классе `InternetService` переменную `BASE_URL`, подставляя свой `ipv4`. Порт оставляем тот же. 
 
 ```
 "http://192.168.100.108:8000"  
 ```
 
 Проверка работы
-Запускаем предварительно установленный эмулятор(Рекомендуется Pixel 4 API 26)
+Запускаем предварительно установленный эмулятор(Рекомендуется `Pixel 4 API 26`)
 
 ![Untitled](assets/Phone_screen.png)
     
@@ -450,21 +452,21 @@ ALLOWED_HOSTS = ["192.168.100.108", "localhost", "127.0.0.1"] где
 
 ![Untitled](assets/Empty_activity.png)
    
-Назовем ее DetailedActivity.
+Назовем ее `DetailedActivity`.
 Разметку сделайте самостоятельно, подобно этой:
 
 ![Untitled](assets/Detailed_activity.png)
     
-Добавим Создание объекта Intent для открытия другой активити и передача данных туда в обработчик нажатий на MainActivity:
+Добавим Создание объекта `Intent` для открытия другой активити и передача данных туда в обработчик нажатий на `MainActivity`:
 
-```
+```java
 Intent intent = new Intent(MainActivity.this, DetailedActivity.class);
                 intent.putExtras(bundles.get(Integer.parseInt(view.getTag().toString())));
                 startActivity(intent);
 ```
 
-И рассмотрим код DetailedActivity:
-```
+И рассмотрим код `DetailedActivity`:
+```java
 public class DetailedActivity extends AppCompatActivity {
 
     @Override
