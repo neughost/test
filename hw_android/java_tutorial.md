@@ -1,21 +1,18 @@
-# Методические указания по выполнению домашнего задания iOS
+# Методические указания по выполнению домашнего задания Android
 
 ### Команда курса благодарит Низовцева Романа за активное участие в подготовке данного руководства.
 
 # План
 
 1. Создание проекта
-3. Организация структуры проекта
-4. Запуск и отладка приложения
-5. Добавление таблицы на экран
-6. Веб сервис
-    1. Подкючение приложения к собственному сервису
-    2. Обработка подключения к сервису
-7. Экран детальной информации
-    1. Переход на экран с детальной информацией
-    2. Заполнение данныеми экрана детальной информации
-    3. Верстка экрана детальной информации
-8. Полезные ссылки
+2. Структура проекта
+3. Создание разметки главной Activity
+4. Создание шаблона элементов
+5. Реализация запросов к API
+6. Создание POJO класса
+7. Демонстрация полученных данных пользователю
+8. Запуск локального сервера
+9. Создание второй активити
 
 # Создание проекта
 
@@ -32,7 +29,6 @@
 Проект создан. У нас сразу открываются файлы MainActivity.java и activity_main.xml. Оба файла относятся к главной и пока единственной странице нашего приложения (Activity). 
 MainActivity.java –программная часть. В этом файле мы будем писать код на языке java. 
 activity_main.xml – визуальная часть. В этом файле мы будем работать с xml разметкой (добавлять элементы, с которыми пользователь будет взаимодействовать).
-
 
 ![Untitled](assets/MainActivity.png)
 
@@ -57,6 +53,7 @@ Layout-файлы разметки Активити.
 Добавляем на экран LinearLayout c параметрами ширины и высоты: match_parent. Внутрь кладем элементы ImageView и три TextView.
 Код разметки:
 
+```
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -110,6 +107,7 @@ Layout-файлы разметки Активити.
                 android:textSize="18dp" />
         </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+```
 
 # Реализация запросов к API
 
@@ -129,6 +127,7 @@ implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 Этот класс должен быть singleton-объектом, поэтому объявляем статическую переменную и функцию, которая создаёт и возвращает переменную того же типа, что и класс. Объявим и инициализируем Retrofit в конструкторе NetworkService:
 Получаем следующее:
 
+```
 public class NetworkService {
     private static NetworkService mInstance;
     private static final String BASE_URL = "http://192.168.100.108:8000";
@@ -149,6 +148,7 @@ public class NetworkService {
     }
     
 }
+```
 
 # Создание POJO класса
 
@@ -159,6 +159,7 @@ POJO класс – класс объекты которого будут соз
 
 Для него Pojo класс будет следующим:
 
+```
 public class Post {
     @SerializedName("pk")
     @Expose
@@ -197,16 +198,20 @@ public class Post {
     }
 
 }
+```
 
 Подобно классу создаем интерфейс JSONPlaceHolderApi. Он будет определять конечную точку запроса к Api. 
 
+```
 public interface JSONPlaceHolderApi {
     @GET("/os")
     public Call<List<Post>> getAllPosts();
 }
+```
 
 Теперь нам нужно, чтобы Retrofit предоставил реализацию интерфейса JSONPlaceHolderApi. Для этого используем метод create():
-    
+
+```
 public class NetworkService {
     private static NetworkService mInstance;
     private static final String BASE_URL = "http://192.168.100.108:8000";
@@ -229,9 +234,11 @@ public class NetworkService {
         return mRetrofit.create(JSONPlaceHolderApi.class);
     }
 }
+```
 
 Добавим в MainActivity.java отправление запроса:
 
+```
 NetworkService.getInstance()
         .getJSONApi()
         .getAllPosts()
@@ -252,14 +259,20 @@ NetworkService.getInstance()
                 t.printStackTrace();
             }
         });
+```
 
 # Демонстрация полученных данных пользователю
 
 Добавим в build.gradle (app) зависимости:
+
+```
 implementation 'com.github.bumptech.glide:glide:4.11.0'
 annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+```
 
 Создадим функцию addCardView(Post post, int i) в классе MainActivity
+
+```
 public void addCardView(Post post, int i) {
 
 //Преобразование лаяута шаблона в элемент типа View
@@ -308,21 +321,32 @@ public void addCardView(Post post, int i) {
 // Добавление заполненного шаблонного элемента в LinearLayout на главном экране. 
     linMain.addView(view);
 }
+```
 
 Также необходимо создать вне метода onCreate переменные
+
+```
 LinearLayout linMain;
 ArrayList<Bundle> bundles;
+```
 
- и проинициализировать их внутри этого метода. 
+и проинициализировать их внутри этого метода. 
+
+```
 bundles = new ArrayList<>();
 linMain = findViewById(R.id.linear_main);
+```
 
 Добавляем вызовы созданной ранее функции внутрь метода onResponse(…)
+
+```
 for (int i = 0; i < postList.size(); i++) {
     addCardView(postList.get(i), i);
 }
+```
 
 Таким образом, код класса MainActivity
+```
 public class MainActivity extends AppCompatActivity {
     LinearLayout linMain;
     ArrayList<Bundle> bundles;
@@ -396,6 +420,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 }
+```
 
 # Запуск локального сервера
     
@@ -410,8 +435,9 @@ ALLOWED_HOSTS = ["192.168.100.108", "localhost", "127.0.0.1"] где
     
 Меняем в классе InternetService переменную BASE_URL, подставляя свой ipv4. Порт оставляем тот же. 
 
+```
 "http://192.168.100.108:8000"  
-
+```
 
 Проверка работы
 Запускаем предварительно установленный эмулятор(Рекомендуется Pixel 4 API 26)
@@ -431,12 +457,14 @@ ALLOWED_HOSTS = ["192.168.100.108", "localhost", "127.0.0.1"] где
     
 Добавим Создание объекта Intent для открытия другой активити и передача данных туда в обработчик нажатий на MainActivity:
 
+```
 Intent intent = new Intent(MainActivity.this, DetailedActivity.class);
                 intent.putExtras(bundles.get(Integer.parseInt(view.getTag().toString())));
                 startActivity(intent);
-
+```
 
 И рассмотрим код DetailedActivity:
+```
 public class DetailedActivity extends AppCompatActivity {
 
     @Override
@@ -460,6 +488,7 @@ public class DetailedActivity extends AppCompatActivity {
         }
     }
 }
+```
 
 Теперь по нажатию на элементы главной активити будет открываться вторая активити с детальной информацией.
 
