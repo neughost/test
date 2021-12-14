@@ -1,551 +1,497 @@
-# Методические указания по выполнению домашнего задания iOS
+# Методические указания по выполнению домашнего задания Android
 
-### Команда курса благодарит Курганову Александру и Федорову Антонину за активное участие в подготовке данного руководства.
-
-! Данное методическое указание подходит только для устройств с операционной системой macOS !
+### Команда курса благодарит Низовцева Романа за активное участие в подготовке данного руководства.
 
 # План
 
-1. Установка
-2. Создание проекта
-3. Организация структуры проекта
-4. Запуск и отладка приложения
-5. Добавление таблицы на экран
-6. Веб сервис
-    1. Подкючение приложения к собственному сервису
-    2. Обработка подключения к сервису
-7. Экран детальной информации
-    1. Переход на экран с детальной информацией
-    2. Заполнение данныеми экрана детальной информации
-    3. Верстка экрана детальной информации
-8. Полезные ссылки
-
-# Установка
-
-Зайти на [сайт](https://xcodereleases.com) и открыть вкладку `Releases`. Найти `Xcode`, совместимый с вашим устройством. Или можно зайти в `AppStore` и скачать там `Xcode`.
-После установки `Xcode` необходимо зарегистрировать собственный `AppleID` для подписи приложения.
-Для этого открыть `Xcode->Preferences->Accounts`, нажать на кнопку `+` и выбрать `AppleID`.
-
-![Untitled](assets/IDE.png)
+1. Создание проекта
+2. Структура проекта
+3. Создание разметки главной Activity
+4. Создание шаблона элементов
+5. Реализация запросов к API
+6. Создание POJO класса
+7. Демонстрация полученных данных пользователю
+8. Запуск локального сервера
+9. Создание второй активити
 
 # Создание проекта
 
-В данном пункте мы создадим пустой проект.
-Открыть `Xcode` и нажать `Create a new Xcode project`.
+Создаем новый проект в `Android Studio`. В качестве шаблона выбираем `Empty Activity`.
 
-![Untitled](assets/Welcome.png)
+![Untitled](assets/Template.png)
 
-Выбрать вкладку `iOS` и нажать `App` и `Next`.
+Указываем путь и имя. `Minimum SDK` оставляем без изменений. Язык: `java`. Завершаем создание проекта.
 
 ![Untitled](assets/New_project.png)
 
-Настройки по вкладкам: 
-`Product Name` – указать название разрабатываемого приложения.
-`Team` – выбрать добавленный ранее `AppleID`.
-`Organization Identifier` – также указать свой `AppleID`.
-`Bundle Identifier` конфигурируется автоматически, менять его не нужно.
-`Interface` – `Storyboard`
-Language: `Swift`
-Снимаем галочки с полей `Core Data` и `Include Tests`.
-Нажать `Next`.
+# Структура проекта
 
-![Untitled](assets/Options.png)
+Проект создан. У нас сразу открываются файлы `MainActivity.java` и `activity_main.xml`. Оба файла относятся к главной и пока единственной странице нашего приложения `(Activity)`. 
+`MainActivity.java` –программная часть. В этом файле мы будем писать код на языке `java`. 
+`activity_main.xml` – визуальная часть. В этом файле мы будем работать с `xml` разметкой (добавлять элементы, с которыми пользователь будет взаимодействовать).
 
-Для создания папки в проекте необходимо нажать ПКМ на иконку проекта слева и выбрать `New Group`.
+![Untitled](assets/MainActivity.png)
 
-# Организация структуры проекта
-Для того, чтобы в проекте была удобная и понятная навигация между файлами – необходимо научиться грамотно создавать структуру папок, по которым будем раскладывать файлы с кодом для наших экранов, запросов в сеть и прочего. Для того, чтобы создать новую папку – необходимо кликнуть правой кнопки мыши по папки, в который вы хотите создать новую и выбрать пункт `New Group`.
+Посмотрим на структуру проекта:
 
-![Untitled](assets/Structure.png)
+![Untitled](assets/Project_Structure.png)
 
-При создании проекта `Xcode` автоматически сгенерирует файл `ViewController.swift`, который является экраном, с которого запускается приложение. Его следует переименовать в соответствии с вашей предметной областью. В нашем случае это `WeatherViewConroller`.
-Далее необходимо создать папки и файлы и сортировать их следующим образом:
-в папку `utils` поместить вспомогательные файлы, такие как: 
-`AppDelegate.swift/SceneDelegate.swift` (стартовый файл приложения)
-`MainStoryboard.swift` (отображает главный экран приложения при использовании `Storyboards`)
-`Info.plist` (необходим для задания структуры и параметров проекта)
-в папке `app` расположить основной код проекта:
-в папке `service` поместить файлы для работы с API.
-в папку `ViewController` поместить все файлы, относящиеся визуальным представлениям приложения.
+`AndroidManifest.xml` - это необходимый файл в любом проекте. Он определяет глобальные значения для вашего пакета, в нем вы описываете, что находится внутри вашего приложения - деятельности, сервисы и т.д.
+`Res-папка`, где хранятся все ресурсы приложения.
+`Layout` - папка с файлами разметки `Активити`.
 
-![Untitled](assets/Structure_group.png)
+# Создание разметки главной Activity
 
-Примечание: в `Swift` принято `CamelCase` наименование с максимально подробным описанием, например: `WeatherViewController`  при создании `View Controller`, `WeatherTableViewCell` при создании ячейки таблицы, `downloadWeatherDataFromWeatherApiService` при скачивании данных с определенного (в данном случае погодного) API сервиса.
-Для удаления папки или файла из проекта необходимо нажать ПКМ или сочетание клавиш `Command+backspace`, выбрать `Delete` и в открывшемся диалоговом окне выбрать `Move to Trash`.
-После организации структуры проекта необходимо его собрать. Для этого нажать в верхней панели `Xcode` `Product->Build` (`Command+B`).
-Если вы перемещали файл `Info.plist` из корня проекта, то проект не соберется и появится ошибка: `Build input file cannot be found`.
+Перейдем к файлу `activity_main.xml`, добавим элемент `ScrollView` c параметрами высоты и ширины : `match_parent`. В таком случае элемент займет всю площадь экрана.
+Внутри ScrollView присутствует `LinearLayout`. Зададим ему `id: linear_main`
 
-![Untitled](assets/Build_error.png)
+![Untitled](assets/Linear_Layout.png)
 
-Для решения данной ошибки необходимо нажать на иконку проекта в левом меню, перейти на вкладку `Build Settings` и в поиске набрать `plist`.
+# Создание шаблона элементов
 
-![Untitled](assets/Build_settings.png)
+Создаем новый `layout-файл`, кликнув по папке с соответствующим названием правой кнопкой мыши `New->Layout Resource File` и называем его `item_view`. 
+Добавляем на экран `LinearLayout` c параметрами ширины и высоты: `match_parent`. Внутрь кладем элементы `ImageView` и три `TextView`.
+Код разметки:
 
-В разделе `Packaging` пункта `Info.plist File` необходимо 2 раза щелкнуть ЛКМ на расположение файла `info.plist`, прописать там новый путь до этого файла и нажать `Enter`.
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="#FF6200EE"
+            >
 
-![Untitled](assets/Build_final.png)
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="match_parent"
+                android:layout_margin="8dp"
+                android:layout_height="200dp"
+                 />
 
-После этого проект должен собираться без ошибок.
-Также можно выбрать устройство, с которого будет запускаться приложение путем нажатия на панель изображенную ниже:
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Заголовок"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="28dp" />
 
-![Untitled](assets/Device.png)
+            <TextView
+                android:id="@+id/descr"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Описание"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
-# Запуск и отладка приложения
-В данном пункте мы сделаем первоначальные настройки проекта, которые позволят нам запустить проект на симуляторе и убедиться в том, что все работает.
-Примечание:
-Данное домашнее задание выполнено с использованием архитектуры MVC.
-Для того, чтобы узнать версию iOS, начиная с которой будет работать приложение необходимо нажать на иконку проекта слева, в разделе `Targets` выбрать соответствующее приложение, перейти во вкладку `General` в раздел `Deployment Info`.
-
-![Untitled](assets/iOS_version.png)
-
-Если у вас в настройках проекта выбрана iOS 13.0 и позднее, то следующие действия необходимо выполнять в файле `SceneDelegate.swift`.
-В файле `SceneDelegate.swift` необходимо выбрать функцию
-
-```swift
- func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) 
+            <TextView
+                android:id="@+id/version"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_height="wrap_content"
+                android:text="Версия"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="18dp" />
+        </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-и написать следующий код:
+# Реализация запросов к API
 
-![Untitled](assets/Code.png)
+Для выполнения запросов к `API` будем использовать `REST` клиент для `Java` и `Android Retrofit 2`. 
 
-На 21 строке при установке root контроллера необходимо написать имя `View Controller`, который должен запускаться первым.
+Настройка `Retrofit`
+Добавьте следующую зависимость в файл `build.gradle (app)`:
+`implementation 'com.squareup.retrofit2:retrofit:2.4.0'`
+Мы будем использовать Gson для преобразования `JSON` в `POJO. Retrofit` предоставляет зависимость, которая автоматически конвертирует `JSON` в `POJO`. Для этого добавьте ещё одну зависимость в файл `build.gradle`:
+`implementation 'com.squareup.retrofit2:converter-gson:2.3.0'`
+Добавьте разрешение на работу с сетью в файл `AndroidManifest`:
+`<uses-permission android:name="android.permission.INTERNET"/>`
+После того, как зависимости добавлены, нам необходимо написать код для настройки библиотеки `Retrofit`.
+Создайте класс с именем `NetworkService`:
 
-Если у вас в настройках проекта выбрана iOS 12.4 и ранее, то в файле `AppDelegate.swift` необходимо выбрать функцию 
-```swift
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool
-```
-и написать следующий код:
+![Untitled](assets/Network_service.png)
 
-![Untitled](assets/App_delegate.png)
+Этот класс должен быть `singleton-объектом`, поэтому объявляем статическую переменную и функцию, которая создаёт и возвращает переменную того же типа, что и класс. Объявим и инициализируем `Retrofit` в конструкторе `NetworkService`:
+Получаем следующее:
 
-После этого в файле `WeatherViewController.swift` в функции `viewDidLoad` можно указать 
+```java
+public class NetworkService {
+    private static NetworkService mInstance;
+    private static final String BASE_URL = "http://192.168.100.108:8000";
+    private Retrofit mRetrofit;
 
-```swift
-view.backgroundColor = .red
-```
-и запустить приложение через `Produt->Run` (`Command+R`). Должен открыться симулятор и приложение, у которого фон будет красным.
-
-![Untitled](assets/Red.png)
-
-Если этого не произошло, можно воспользоваться инструментом `Debug View Hierarchy` для просмотра UI элементов.
-
-![Untitled](assets/View_hierarchy.png)
-
-После открытия дебаггера и во время его работы симулятор будет заблокирован.
-Откроется иерархия UI классов приложения, расположенных в дереве:
-
-![Untitled](assets/Hierarchy.png)
-
-В нем можно просмотреть основную информацию о расположении и свойствах всех UI-элементов, добавленных в ваше приложение. Для выхода из `debugger` необходимо надать кнопку `Continue` на нижней панели.
-
-
-# Добавление таблицы на экран
-Сейчас мы добавим на экран таблицу, в которой в будущем сможем отобразить информацию по выбранной тематике, которая придет с бэкенда. Зададим все первоначальные настройки для того, чтобы смогли собрать приложение без ошибок и увидеть, что пустая таблица, действительно добавилась на экран. 
-Для улучшения UI/UX можно установить заголовок для экрана с помощью функции `setupNavigation()`,
-
-```swift
-private func setupNavigation() {
-        navigationItem.title = "Список городов"
-    }
-```
-которую вызовем во `viewDidLoad()`:
-```swift
-override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-        setupNavigation()
-    }
-```
-
-Для того, чтобы на экране отобразилась таблица, необходимо создать переменную класса `WeatherViewController` типа `UITableView` и задать там первичные настройки: флаг `translatesAutoresizingMaskIntoConstraints`, `delegate`, `dataSource`, `register` и `estimatedRowHeight`.
-
-```swift
-private lazy var weatherListTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(WeatherListTableViewCell.self, forCellReuseIdentifier: "listCell")
-        tableView.estimatedRowHeight = view.bounds.height / 3
-        return tableView
-    }()
-```
-После этого необходимо добавить таблицу на `view`, которая уже есть у любого `ViewController`.
-Добавление таблицы и последующая верстка происходит с помощью механизма `Auto Layout`. 
-Оборачиваем код в функцию и вызваем ее во `viewDidLoad()`:
-
-```swift
-private func setupWeatherTableView() {
-        view.addSubview(weatherListTableView)
-        weatherListTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        weatherListTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        weatherListTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
-        weatherListTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-    }
-```
-
-Вызов из `viewDidLoad()`:
-
-```swift
-override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-        setupNavigation()
-        setupWeatherTableView()
-    }
-```
-
-После добавления таблицы на `view` и заданием первичных настроек необходимо реализовать `delegate` и `dataSource` таблицы:
-
-```swift
-extension WeatherListViewController: UITableViewDelegate {
-    func numberOfSections(in tableView: UITableView) -> Int { // количество секций в таблице
-        1
-    }
-}
-```
-```swift
-extension WeatherListViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { // количество строк в секции
-        weatherListData.count
-    }
-}
-```
-
-Примечание:
-`weatherListData` –поле класса в `WeatherListViewController` типа массив с данными о погоде, которые придут с сервиса в структуре `WeatherData`:
-
-```swift
-private var weatherListData: [WeatherData] = []
-```
-Для установки ячейки в таблицу необходимо создать новый файл, отвечающий за нее: `WeatherListTableViewCell.swift`
-
-```swift
-import Foundation
-import UIKit
-
-final class WeatherListTableViewCell: UITableViewCell {
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-```
-
-и поместить в нее функцию, которая будет отвечать за заполнение ячейки данными:     
-```swift
-func configure(withModel weather: WeatherData) {
-        textLabel?.text = weather.location.country
-    }
-```
-
-Примечание: `textLabel` – поле, существующее по умолчанию только у классов типа `UITableViewCell`.
-Вызвать данную функцию необходимо в `extension WeatherListViewController: UITableViewDataSource`
-
-```swift
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell { // установка ячейки для таблицы
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "listCell", for: indexPath) as? WeatherListTableViewCell else { return .init() }
-        cell.configure(withModel: weatherListData[indexPath.row])
-        return cell
-    }
-```
-
-Далее можно запустить приложение и посмотреть на получившуюся таблицу либо в симуляторе (будут видны разделители секций), либо во `View Debug Hierarchy`:
-
-![Untitled](assets/City_list.png)
-
-# Подключение приложения к собственному сервису
-
-В данном пункте мы создадим модель данных, которая соответствует тому, что вы уже создали на бэкенде. В эту модель данных будет парситься `json`. Также мы создадим запрос к вашему сервису и сам парсинг ответа.
-
-Прежде чем приступать к созданию подключения сервиса необходимо задать модель с данными, которые придут в ответе от сервиса.
-Создадим их в отдельном файле `app->apiService->WeatherModel.swift`:
-```swift
-import Foundation
-
-struct WeatherData: Codable {
-    var location: Location
-    var current: Current
-}
-
-struct Location: Codable {
-    var name: String
-    var country: String
-    var region: String
-}
-
-struct Current: Codable {
-    var observation_time: String
-    var temperature: Int
-    var wind_speed: Int
-    var pressure: Int
-    var feelslike: Int
-}
-```
-
-Примечание: поля у структуры желательно должны быть такими же, как в `json` ответе. Если нужно переименовать поля, то следует воспользоваться `CodingKeys`.
-
-После создания модели можно приступать к созданию своего типа запроса для соединения с сервисом. Также в отдельном файле. В данном случае `app->apiService->ApiServiceHelper.swift`: 
-Создадим enum для удобного доступа к методам API:
-```swift
-enum ApiMethods: String {
-    case get = "GET"
-    case post = "POST"
-}
-```
-Напишем функцию для генерации определенного запроса:
-```swift
-func configureURLRequest(city: String) -> URLRequest {
-    var request: URLRequest
-    let acsessToken: String = "b849bbbe085e655065bb8546ec2a8dd5" // нужен для weather-api
-
-    let queryItems = [
-        URLQueryItem(name: "access_key", value: acsessToken),
-        URLQueryItem(name: "query", value: "'\(city)'")
-    ]
-    guard var urlComponents = URLComponents(string: "http://api.weatherstack.com/current") else {
-        // если не получится создать компоненты из своих query параметров, то переходим на google
-        return URLRequest(url: URL(string: "https://google.com")!)
+    private NetworkService() {
+        mRetrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
     }
 
-    urlComponents.queryItems = queryItems
-
-    guard let url = urlComponents.url else {
-        // если не получится создать url из своего адреса, то переходим на google
-        return URLRequest(url: URL(string: "https://google.com")!)
-    }
-
-    request = URLRequest(url: url)
-    request.httpMethod = ApiMethods.post.rawValue // устанавливаем метод запроса через enum
-    return request
-}
-```
-
-Переходим к созданию запросов к собственному api сервису в отдельном файле: `app->apiService->ApiService.swift`: 
-```swift
-import Foundation
-
-final class ApiService {
-    
-    func getWeatherData(city: String, completion: @escaping (WeatherData?, Error?)-> ()) {
-        let request = configureURLRequest(city: city) // конфигурация кастомного запроса
-
-        URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in  // completionHandler – замыкание для обработки  данных  в другом слое (в данном случае  view controller)
-
-            if let error = error {
-                print("error")
-                completion(nil, error) 
-            }
-            if let response = response {
-                print(response)
-            }
-            guard let data = data else {
-                completion(nil, error)
-                return
-            }
-
-            do {
-                let weatherData = try JSONDecoder().decode(WeatherData.self, from: data) //декодируем json в созданную струткру с данными
-                completion(weatherData, nil)
-            } catch let error {
-                completion(nil, error)
-            }
-        }).resume() // запускаем задачу
-    }
-}
-```
-
-# Обработка подключения к сервису
-Теперь мы научимся кидать запрос к сервису из нашего экрана, получать и обрабатывать ответ, после чего добавим полученный ответ на экран и отобразим его в таблице. 
-
-Примечание: из-за ограничений API для получения списка городов пришлось запустить запрос для получения одного города несколько раз.
-Для обработки подключения к сервису необходимо вернуться в файл `WeatherViewController.swift` и создать там экземпляр `apiService`:
-```swift
-private var apiService: ApiService?
-```
-и проинициализировать его во `viewDidLoad()`:
-```swift
-override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-        setupNavigation()
-        setupWeatherTableView()
-
-        apiService = ApiService()
-        loadWeatherData(cities: ["New York", "Moscow", "London", "Berlin"])
-    }
-```
-и проинициализировать его во `viewDidLoad()`:
-```swift
-private func loadWeatherData(cities: [String]) {
-        guard let apiService = apiService else { // раскрытие опциональной переменной apiService
-            return
+    public static NetworkService getInstance() {
+        if (mInstance == null) {
+            mInstance = new NetworkService();
         }
+        return mInstance;
+    }
+    
+}
+```
 
-        cities.forEach { 
-            apiService.getWeatherData(city: $0, completion: { [weak self] (weatherData, error) in // weak self для избежания цикла сильных ссылок из-за замыкания completion
-                DispatchQueue.main.async { // запуск асинхронной задачи на main потоке из-за обработки на ui !!!
-                    guard let self = self else { return }
-                    if let error = error {
-     // показ ошибки
-                        self.present(UIAlertController(title: "ERROR", message: error.localizedDescription, preferredStyle: .alert), animated: true)
-                        return
-                    }
-                    if let weatherData = weatherData {
-                        self.weatherListData.append(weatherData) // массив с данными о погоде
-                    }
-                    self.weatherListTableView.reloadData() // перезагрузка таблицы для отображения новых данных
+# Создание POJO класса
+
+`POJO` класс – класс объекты которого будут создаваться из полученного `json`. Основу составляют переменные, геттеры и сеттеры. 
+Наше `API` имеет следующий вид:
+
+![Untitled](assets/API_format.png)
+
+Для него `Pojo` класс будет следующим:
+
+```java
+public class Post {
+    @SerializedName("pk")
+    @Expose
+    private int pk;
+    @SerializedName("os_name")
+    @Expose
+    private String osName;
+    @SerializedName("last_version")
+    @Expose
+    private float lastVersion;
+    @SerializedName("os_descript")
+    @Expose
+    private String osDescript;
+    @SerializedName("src")
+    @Expose
+    private String src;
+
+    public int getPk() {
+        return pk;
+    }
+
+    public String getOsName() {
+        return osName;
+    }
+
+    public float getLastVersion() {
+        return lastVersion;
+    }
+
+    public String getOsDescript() {
+        return osDescript;
+    }
+
+    public String getSrc() {
+        return src;
+    }
+
+}
+```
+
+Подобно классу создаем интерфейс `JSONPlaceHolderApi`. Он будет определять конечную точку запроса к `API`. 
+
+```java
+public interface JSONPlaceHolderApi {
+    @GET("/os")
+    public Call<List<Post>> getAllPosts();
+}
+```
+
+Теперь нам нужно, чтобы `Retrofit` предоставил реализацию интерфейса `JSONPlaceHolderApi`. Для этого используем метод `create()`:
+
+```java
+public class NetworkService {
+    private static NetworkService mInstance;
+    private static final String BASE_URL = "http://192.168.100.108:8000";
+    private Retrofit mRetrofit;
+
+    private NetworkService() {
+        mRetrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
+    public static NetworkService getInstance() {
+        if (mInstance == null) {
+            mInstance = new NetworkService();
+        }
+        return mInstance;
+    }
+    public JSONPlaceHolderApi getJSONApi() {
+        return mRetrofit.create(JSONPlaceHolderApi.class);
+    }
+}
+```
+
+Добавим в `MainActivity.java` отправление запроса:
+
+```java
+NetworkService.getInstance()
+        .getJSONApi()
+        .getAllPosts()
+        .enqueue(new Callback<List<Post>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {
+                List<Post> postList = response.body();
+
+                //Запрос успешно получен, в postList лежат объекты класса Post из нашего Api
                 }
-            })
-        }
-    }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Post>> call, @NonNull Throwable t) {
+
+             //Что-то пошло не так…
+                t.printStackTrace();
+            }
+        });
 ```
 
-Запускаем приложение на симуляторе и видим данные, пришедшие с сервиса, отображенные в таблице:
-![Untitled](assets/Country_list.png)
+# Демонстрация полученных данных пользователю
 
-# Переход на экран с детальной информацией
-Следующей частью задания является создание второго экрана с детальной информацией о каждом объекте из списка объектов, которые пришли нам с сервиса. Для этого мы создадим второй `viewController`, расширим делегат для таблицы на первом экране с реализацией перехода на новый второй экран с возможностью передачи данных между экранами.
-Для перехода из таблицы на другой экран необходимо создать еще один `UIViewController` `app-> ViewController->detailInfo->WeatherInfoViewController.swift` и передать в него данные о погоде одного города через инициализатор:
-```swift
-import Foundation
-import UIKit
+Добавим в `build.gradle (app)` зависимости:
 
-final class WeatherInfoViewController: UIViewController {
-    private var weatherData: WeatherData
+```java
+implementation 'com.github.bumptech.glide:glide:4.11.0'
+annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+```
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+Создадим функцию `addCardView(Post post, int i)` в классе `MainActivity`
+
+```java
+public void addCardView(Post post, int i) {
+
+//Преобразование лаяута шаблона в элемент типа View
+    final View view = getLayoutInflater().inflate(R.layout.item_view, null); 
+
+
+//Создание Layout Params для настройки отступов от границ экрана.
+    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+    );
+    params.setMargins(24, 0, 24, 24);
+
+// Инициализация элементов шаблона
+    TextView title = view.findViewById(R.id.title);
+    TextView descr = view.findViewById(R.id.descr);
+    TextView version = view.findViewById(R.id.version);
+    ImageView image = view.findViewById(R.id.imageView2);
+
+//Заполнение элементов шаблона из объекта post
+    Glide.with(this).load(post.getSrc()).into(image);
+    title.setText(post.getOsName());
+    descr.setText(post.getOsDescript());
+    version.setText(post.getLastVersion() + "");
+    view.setLayoutParams(params);
+//Создание Bundle объекта для передачи данных на другую страницу и добавление этого объекта в List 
+    Bundle bundle = new Bundle();
+    bundle.putString("os_name", post.getOsName());
+    bundle.putString("os_descript", post.getOsDescript());
+    bundle.putString("last_version", post.getLastVersion() + "");
+    bundle.putString("src", post.getSrc());
+    bundles.add(bundle);
+
+// Установка тега с номером по списку этого шаблонного элемента
+    view.setTag(i + "");
+
+//Добавление слушателя нажатий 
+    view.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+	//Создание объекта Intent для открытия другой активити и передача данных туда. 
+
+        }
+    });
+
+// Добавление заполненного шаблонного элемента в LinearLayout на главном экране. 
+    linMain.addView(view);
+}
+```
+
+Также необходимо создать вне метода `onCreate` переменные
+
+```java
+LinearLayout linMain;
+ArrayList<Bundle> bundles;
+```
+
+и проинициализировать их внутри этого метода. 
+
+```java
+bundles = new ArrayList<>();
+linMain = findViewById(R.id.linear_main);
+```
+
+Добавляем вызовы созданной ранее функции внутрь метода `onResponse(…)`
+
+```java
+for (int i = 0; i < postList.size(); i++) {
+    addCardView(postList.get(i), i);
+}
+```
+
+Таким образом, код класса `MainActivity`
+
+```java
+public class MainActivity extends AppCompatActivity {
+    LinearLayout linMain;
+    ArrayList<Bundle> bundles;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
+        bundles = new ArrayList<>();
+        linMain = findViewById(R.id.linear_main);
+        NetworkService.getInstance()
+                .getJSONApi()
+                .getAllPosts()
+                .enqueue(new Callback<List<Post>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {
+                        List<Post> postList = response.body();
+
+                        for (int i = 0; i < postList.size(); i++) {
+                            addCardView(postList.get(i), i);
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<List<Post>> call, @NonNull Throwable t) {
+
+
+                        t.printStackTrace();
+                    }
+                });
     }
+
+    public void addCardView(Post post, int i) {
+        final View view = getLayoutInflater().inflate(R.layout.item_view, null);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(24, 0, 24, 24);
+
+        TextView title = view.findViewById(R.id.title);
+        TextView descr = view.findViewById(R.id.descr);
+        TextView version = view.findViewById(R.id.version);
+        ImageView image = view.findViewById(R.id.imageView2);
+        Glide.with(this).load(post.getSrc()).into(image);
+        title.setText(post.getOsName());
+        descr.setText(post.getOsDescript());
+        version.setText(post.getLastVersion() + "");
+        view.setLayoutParams(params);
+        Bundle bundle = new Bundle();
+        bundle.putString("os_name", post.getOsName());
+        bundle.putString("os_descript", post.getOsDescript());
+        bundle.putString("last_version", post.getLastVersion() + "");
+        bundle.putString("src", post.getSrc());
+        bundles.add(bundle);
+        view.setTag(i + "");
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, DetailedActivity.class);
+                intent.putExtras(bundles.get(Integer.parseInt(view.getTag().toString())));
+                startActivity(intent);
+            }
+        });
+
+
+        linMain.addView(view);
+    }
+
+
+}
+```
+
+# Запуск локального сервера
     
-    init(weatherData: WeatherData) {
-        self.weatherData = weatherData
-        super.init(nibName: nil, bundle: nil)
+Добавляем в `settings` `django` проекта с `API`.
+
+`ALLOWED_HOSTS = ["192.168.100.108", "localhost", "127.0.0.1"]` где 
+`192.168.100.108` - `IPV4` нашего компьютера.
+
+Запускаем из командной строки и папки проекта сервер
+
+![Untitled](assets/Django_start.png)
+    
+Меняем в классе `InternetService` переменную `BASE_URL`, подставляя свой `ipv4`. Порт оставляем тот же. 
+
+```
+"http://192.168.100.108:8000"  
+```
+
+Проверка работы
+Запускаем предварительно установленный эмулятор(Рекомендуется `Pixel 4 API 26`)
+
+![Untitled](assets/Phone_screen.png)
+    
+# Создание второй активити
+    
+Создадим Активити следующим образом:
+
+![Untitled](assets/Empty_activity.png)
+   
+Назовем ее `DetailedActivity`.
+Разметку сделайте самостоятельно, подобно этой:
+
+![Untitled](assets/Detailed_activity.png)
+    
+Добавим Создание объекта `Intent` для открытия другой активити и передача данных туда в обработчик нажатий на `MainActivity`:
+
+```java
+Intent intent = new Intent(MainActivity.this, DetailedActivity.class);
+                intent.putExtras(bundles.get(Integer.parseInt(view.getTag().toString())));
+                startActivity(intent);
+```
+
+И рассмотрим код `DetailedActivity`:
+```java
+public class DetailedActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_detailed);
+//Инициализация компонентов активити
+        TextView title=findViewById(R.id.title);
+        TextView description=findViewById(R.id.description);
+        TextView version=findViewById(R.id.version);
+        ImageView image=findViewById(R.id.imageView);
+//Получение объекта Bundle и проверка получения.
+        Bundle bundle =getIntent().getExtras();
+        if(bundle!=null)
+        { //Заполнение компонентов активити из Bundle.
+	    Glide.with(this).load(bundle.getString("src")).into(image);
+            title.setText(bundle.getString("os_name"));
+            description.setText(bundle.getString("os_descript"));
+            version.setText("Версия: "+bundle.getString("last_version"));
+
+        }
     }
 }
 ```
 
-Далее необходимо добавить переход на данный экран с основного. Делается это с помощью добавления метода делегата таблицы `didSelectRowAt` в `extension WeatherListViewController: UITableViewDelegate`
-```swift
-func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let weatherInfoViewController = WeatherInfoViewController(weatherData: self.weatherListData[indexPath.row])
-        navigationController?.pushViewController(weatherInfoViewController, animated: true)
-    }
-```
+Теперь по нажатию на элементы главной активити будет открываться вторая активити с детальной информацией.
 
-# Заполнение данными экрана детальной информации
-Создадим функцию, которая будет сохранять в текстовые лейблы значения строк с детальной информацией об объекте, которые мы передали с первого экрана.
-Заполнение этого экрана данными происходит через функцию `fillData(withModel: weatherData)`:
-```swift
-  func fillData(withModel: WeatherData) {
-        degreeLabel.text =  "Temperature: " + String(withModel.current.temperature)
-        windLabel.text = "Wind speed: " + String(withModel.current.wind_speed)
-        pressureLabel.text = "Pressure: " + String(withModel.current.pressure)
-        feelslikeLabel.text = "Feels like: " + String(withModel.current.feelslike)
-    }
-```
-которая вызывается из инициализатора контроллера и поле класса `weatherData`:
-```swift
-private var weatherData: WeatherData
-
-init(weatherData: WeatherData) {
-        self.weatherData = weatherData
-        super.init(nibName: nil, bundle: nil)
-        fillData(withModel: weatherData)
-    }
-```
-
-
-# Верстка экрана детальной информации
-Здесь мы научимся создавать чуть более сложную верстку, чем у нас была на первом экране. Для этого добавим на экран элементы, которые хотим отобразить и зададим для них констрейнты.
-Для добавления картинки в приложение необходимо зайти в папку `Assets.xcassets`, перетащить туда картинку и в правой панели `Xcode` во вкладке `Devices` нажать галочку `Universal`:
-![Untitled](assets/Add_picture.png)
-
-Примечание: для удаление картинки из assets необходимо нажать ПКМ и выбрать `Delete selected items`  или на клавиатуре клавишу `backspace`.
-
-Верстка экрана с детальной информацией:
-
-```swift
-import Foundation
-import UIKit
-
-final class WeatherInfoViewController: UIViewController {
-//добавим на экран элементы, которые хотим отобразить на экране
-    private let imageView = UIImageView()
-    private let degreeLabel = UILabel()
-    private let windLabel = UILabel()
-    private let pressureLabel = UILabel()
-    private let feelslikeLabel = UILabel()
-
-//создадим переменную для хранения детальной информации об объекте
-    private var weatherData: WeatherData
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configure()
-        configureDataElements()
-    }
-    
-    init(weatherData: WeatherData) {
-        self.weatherData = weatherData
-        super.init(nibName: nil, bundle: nil)
-        fillData(withModel: weatherData)
-    }
-    
-    private func configure() {
-        view.backgroundColor = .systemBlue
-        navigationController?.navigationBar.tintColor = .white
-        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
-        navigationItem.title = weatherData.location.country // установка заголока контроллера: название города
-    }
-    
-//зададим базовые настройки для текстовых полей и добавим их на экран 
-    private func configureDataElements() {
-        [degreeLabel, windLabel, pressureLabel, feelslikeLabel].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-            $0.textColor = .white
-            view.addSubview($0)
-        }
-        
-//зададим констрейнты и базовые настройки для картинки
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageView)
-        imageView.heightAnchor.constraint(equalToConstant: 250).isActive = true
-        imageView.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        imageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 5).isActive = true
-        imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        
-        imageView.image = UIImage(named: "sunny")
-        
-//зададим констрейнты для всех текстовых полей
-        degreeLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor).isActive = true
-        degreeLabel.topAnchor.constraint(equalTo: imageView.centerYAnchor, constant: -10).isActive = true
-        
-        windLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        windLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-
-        pressureLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        pressureLabel.centerYAnchor.constraint(equalTo: windLabel.bottomAnchor, constant: 100).isActive = true
-        
-        feelslikeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        feelslikeLabel.centerYAnchor.constraint(equalTo: pressureLabel.bottomAnchor, constant: 100).isActive = true
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-```
-
-Запускаем приложение, нажимаем на ячейку в таблице и попадаем на экран с детальной информацией:
-![Untitled](assets/Final_app.png)
-
-# Полезные ссылки
-
-1. [Книга по Swift](https://docs.swift.org/swift-book/)
-2. [Перевод книги из первой ссылки](https://swiftbook.ru/contents/doc/)
+![Untitled](assets/Final_screen.png)
