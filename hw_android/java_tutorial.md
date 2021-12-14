@@ -495,4 +495,3 @@ public class DetailedActivity extends AppCompatActivity {
 Теперь по нажатию на элементы главной активити будет открываться вторая активити с детальной информацией.
 
 ![Untitled](assets/Final_screen.png)
-
